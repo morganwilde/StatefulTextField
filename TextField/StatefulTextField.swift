@@ -52,19 +52,20 @@ class StatefulTextField: UIView {
     backgroundColor = mercuryColor
     translatesAutoresizingMaskIntoConstraints = false
     
-    titleLabel = ToggleableTextLabel(text: title, toggleFontSizeFrom: 50, to: 10)
+    titleLabel = ToggleableTextLabel(text: title, toggleFontSizeFrom: 50, to: 14)
     addSubview(titleLabel)
     titleLabel.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 16).active = true
     
-    textField = BorderedTextField(frame: CGRect())
+    textField = BorderedTextField()
+    textField.delegate = self
     textField.font = UIFont.systemFontOfSize(50)
-    textField.returnKeyType = .Done
+    textField.minimumFontSize = 14
+    textField.adjustsFontSizeToFitWidth = true
     textField.hidden = true
-    textField.borders = [.Top, .Bottom, .Left, .Right]
-    textField.translatesAutoresizingMaskIntoConstraints = false
+    textField.borders = [.Bottom]
     addSubview(textField)
     textField.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 16).active = true
-    textField.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -16).active = true
+    textField.widthAnchor.constraintEqualToAnchor(widthAnchor, constant: -32).active = true
     textField.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
     
     statefulConstraints[.Unfocused] = [
@@ -131,5 +132,14 @@ extension StatefulTextField {
         }
       }
     }
+  }
+}
+
+// MARK: UITextFieldDelegate
+
+extension StatefulTextField: UITextFieldDelegate {
+  func textFieldShouldEndEditing(textField: UITextField) -> Bool {
+    textField.resignFirstResponder()
+    return true
   }
 }

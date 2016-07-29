@@ -12,8 +12,8 @@ class AnimatingTextLabel: UIView {
 
   static let defaultFontSize: CGFloat = 20
   static let defaultFontWeight: CGFloat = UIFontWeightRegular
-  static let defaultTextBackgroundColor = UIColor.whiteColor()
-  static let defaultTextForegroundColor = UIColor.blackColor()
+  static let defaultTextBackgroundColor = UIColor.clearColor()
+  static let defaultTextForegroundColor = steelColor
   
   var animatingLayer: AnimatingTextLabelLayer!
   var fontSize: CGFloat {

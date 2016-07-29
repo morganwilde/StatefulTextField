@@ -45,6 +45,7 @@ import Parse
 class ViewController: UIViewController {
   
   var statefulTextField: StatefulTextField!
+  var test: UITextField!
 }
 
 // MARK: View Lifecycle
@@ -60,12 +61,10 @@ extension ViewController {
     statefulTextField.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor).active = true
     statefulTextField.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
   }
-//  override func viewDidAppear(animated: Bool) {
-//    super.viewDidAppear(animated)
-//    print(statefulTextField.titleLabel.getSizeForState(.Big))
-//    print(statefulTextField.titleLabel.getSizeForState(.Small))
-//    print(statefulTextField.textField.frame.height)
-//    print(statefulTextField.frame.height)
-//  }
+  override func viewDidAppear(animated: Bool) {
+    super.viewDidAppear(animated)
+    print(statefulTextField.textField.bounds)
+    print(statefulTextField.textField.intrinsicContentSize())
+  }
 }
 

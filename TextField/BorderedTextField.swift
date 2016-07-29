@@ -17,6 +17,7 @@ class BorderedTextField: UITextField {
     case Left
   }
   
+  static let defaultColor = aluminumColor
   static let defaultBorderWeight: CGFloat = 0.5
   
   var borderWeight = BorderedTextField.defaultBorderWeight
@@ -25,7 +26,7 @@ class BorderedTextField: UITextField {
       for (borderLocation, _) in borderLayers {
         if borders.contains(borderLocation) {
           let borderLayer = CALayer()
-          borderLayer.backgroundColor = leadColor.CGColor
+          borderLayer.backgroundColor = BorderedTextField.defaultColor.CGColor
           layer.addSublayer(borderLayer)
           borderLayers[borderLocation] = borderLayer
         } else {
@@ -41,6 +42,16 @@ class BorderedTextField: UITextField {
     .Bottom: nil,
     .Left: nil,
   ]
+  
+  init() {
+    super.init(frame: CGRect())
+   
+    returnKeyType = .Done
+    translatesAutoresizingMaskIntoConstraints = false
+  }
+  required init?(coder aDecoder: NSCoder) {
+    return nil
+  }
 }
 
 // MARK: Sizing
@@ -57,5 +68,6 @@ extension BorderedTextField {
         }
       }
     }
+    super.layoutSublayersOfLayer(layer)
   }
 }

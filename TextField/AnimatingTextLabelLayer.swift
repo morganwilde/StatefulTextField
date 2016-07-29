@@ -27,7 +27,7 @@ class AnimatingTextLabelLayer: CALayer {
   func getAttributedStringWithFontSize(fontSize: CGFloat) -> NSAttributedString {
     let attributes = [
       NSFontAttributeName: UIFont.systemFontOfSize(fontSize, weight: fontWeight),
-//      NSBackgroundColorAttributeName: textBackgroundColor,
+      NSBackgroundColorAttributeName: textBackgroundColor,
       NSForegroundColorAttributeName: textForegroundColor,
     ]
     return NSAttributedString(string: text, attributes: attributes)
