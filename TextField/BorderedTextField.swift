@@ -71,3 +71,15 @@ extension BorderedTextField {
     super.layoutSublayersOfLayer(layer)
   }
 }
+
+// MARK: Events
+
+extension BorderedTextField {
+  func showBorders(show: Bool) {
+    for (_, borderLayer) in borderLayers {
+      if let borderLayer = borderLayer {
+        borderLayer.hidden = !show
+      }
+    }
+  }
+}

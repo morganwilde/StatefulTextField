@@ -105,6 +105,7 @@ extension StatefulTextField {
         self.animateConstraintsFromState(previousState, toState: self.state) {
           self.textField.hidden = false
           self.textField.becomeFirstResponder()
+          self.textField.showBorders(true)
         }
       }
     } else if state == .Focused {
@@ -138,8 +139,19 @@ extension StatefulTextField {
 // MARK: UITextFieldDelegate
 
 extension StatefulTextField: UITextFieldDelegate {
-  func textFieldShouldEndEditing(textField: UITextField) -> Bool {
+  func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+    guard let textField = textField as? BorderedTextField else {
+      return true
+    }
+    textField.showBorders(true)
+    return true
+  }
+  func textFieldShouldReturn(textField: UITextField) -> Bool {
+    guard let textField = textField as? BorderedTextField else {
+      return true
+    }
     textField.resignFirstResponder()
+    textField.showBorders(false)
     return true
   }
 }
