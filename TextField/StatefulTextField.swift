@@ -42,7 +42,7 @@ class StatefulTextField: UIView {
   let paddingVertical: CGFloat = 8
   
   var titleLabel: ToggleableTextLabel!
-  var textField: UITextField!
+  var textField: BorderedTextField!
   var state: State = .Unfocused
   var statefulConstraints = [State: [NSLayoutConstraint]]()
   
@@ -56,10 +56,11 @@ class StatefulTextField: UIView {
     addSubview(titleLabel)
     titleLabel.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 16).active = true
     
-    textField = UITextField(frame: CGRect())
+    textField = BorderedTextField(frame: CGRect())
     textField.font = UIFont.systemFontOfSize(50)
     textField.returnKeyType = .Done
     textField.hidden = true
+    textField.borders = [.Top, .Bottom, .Left, .Right]
     textField.translatesAutoresizingMaskIntoConstraints = false
     addSubview(textField)
     textField.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 16).active = true

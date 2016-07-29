@@ -59,7 +59,6 @@ extension ViewController {
     statefulTextField.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
     statefulTextField.leadingAnchor.constraintEqualToAnchor(view.leadingAnchor).active = true
     statefulTextField.centerYAnchor.constraintEqualToAnchor(view.centerYAnchor).active = true
-    print("bob")
   }
 //  override func viewDidAppear(animated: Bool) {
 //    super.viewDidAppear(animated)

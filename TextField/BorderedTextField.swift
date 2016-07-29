@@ -17,13 +17,45 @@ class BorderedTextField: UITextField {
     case Left
   }
   
-  var borders = [BorderLocation: CALayer]()
+  static let defaultBorderWeight: CGFloat = 0.5
+  
+  var borderWeight = BorderedTextField.defaultBorderWeight
+  var borders = [BorderLocation]() {
+    didSet {
+      for (borderLocation, _) in borderLayers {
+        if borders.contains(borderLocation) {
+          let borderLayer = CALayer()
+          borderLayer.backgroundColor = leadColor.CGColor
+          layer.addSublayer(borderLayer)
+          borderLayers[borderLocation] = borderLayer
+        } else {
+          borderLayers[borderLocation]??.removeFromSuperlayer()
+          borderLayers[borderLocation] = nil
+        }
+      }
+    }
+  }
+  var borderLayers: [BorderLocation: CALayer?] = [
+    .Top: nil,
+    .Right: nil,
+    .Bottom: nil,
+    .Left: nil,
+  ]
 }
 
 // MARK: Sizing
 
 extension BorderedTextField {
   override func layoutSublayersOfLayer(layer: CALayer) {
-//    animatingLayer.frame = bounds
+    for (borderLocation, borderLayer) in borderLayers {
+      if let borderLayer = borderLayer {
+        switch borderLocation {
+          case .Top: borderLayer.frame = CGRect(x: 0, y: 0, width: bounds.width, height: borderWeight)
+          case .Right: borderLayer.frame = CGRect(x: bounds.width - borderWeight, y: 0, width: borderWeight, height: bounds.height)
+          case .Bottom: borderLayer.frame = CGRect(x: 0, y: bounds.height - borderWeight, width: bounds.width, height: borderWeight)
+          case .Left: borderLayer.frame = CGRect(x: 0, y: 0, width: borderWeight, height: bounds.height)
+        }
+      }
+    }
   }
 }
