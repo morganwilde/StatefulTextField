@@ -55,6 +55,7 @@ extension ViewController {
     super.viewDidLoad()
     
     statefulTextField = StatefulTextField(title: "Title")
+    statefulTextField.text = "Howdy!"
     view.addSubview(statefulTextField)
     
     statefulTextField.widthAnchor.constraintEqualToAnchor(view.widthAnchor).active = true
@@ -63,8 +64,6 @@ extension ViewController {
   }
   override func viewDidAppear(animated: Bool) {
     super.viewDidAppear(animated)
-    print(statefulTextField.textField.bounds)
-    print(statefulTextField.textField.intrinsicContentSize())
   }
 }
 
