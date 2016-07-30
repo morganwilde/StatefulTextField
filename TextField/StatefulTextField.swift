@@ -30,8 +30,8 @@ class StatefulTextField: UIView {
     case Filled
   }
   
-  let titleSizeAnimationDuration: NSTimeInterval = 4
-  let titlePositionAnimationDuration: NSTimeInterval = 0.5
+  let titleSizeAnimationDuration: NSTimeInterval = 0.5
+  let titlePositionAnimationDuration: NSTimeInterval = 0.25
   
   let paddingVertical: CGFloat = 8
   
@@ -63,7 +63,6 @@ class StatefulTextField: UIView {
     translatesAutoresizingMaskIntoConstraints = false
     
     titleLabel = ToggleableTextLabel(text: title, toggleFontSizeFrom: 50, to: 14)
-    titleLabel.backgroundColor = UIColor.orangeColor()
     addSubview(titleLabel)
     titleLabel.leadingAnchor.constraintEqualToAnchor(leadingAnchor, constant: 16).active = true
     
@@ -98,8 +97,8 @@ class StatefulTextField: UIView {
       textField.widthAnchor.constraintEqualToAnchor(widthAnchor, constant: -32),
     ]
     statefulConstraints[.Focused] = [
-      titleLabel.topAnchor.constraintEqualToAnchor(topAnchor, constant: 8),
-      textField.widthAnchor.constraintEqualToAnchor(widthAnchor, constant: -32),
+      statefulConstraints[.Focusing]![0],
+      statefulConstraints[.Focusing]![1],
     ]
     statefulConstraints[.Filled] = [
       titleLabel.topAnchor.constraintEqualToAnchor(topAnchor, constant: 8),
@@ -198,6 +197,7 @@ extension StatefulTextField {
           self.state = next
         }
       }
+      
       
     default: break
     }
