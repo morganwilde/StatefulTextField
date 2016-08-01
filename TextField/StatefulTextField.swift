@@ -39,11 +39,7 @@ class StatefulTextField: UIView {
   var textField: BorderedTextField!
   var actionButton: UIButton!
   
-  var state: State = .Unfocused {
-    didSet {
-      print(state)
-    }
-  }
+  var state: State = .Unfocused
   var statefulConstraints = [State: [NSLayoutConstraint]]()
   
   var text: String? {
@@ -72,7 +68,6 @@ class StatefulTextField: UIView {
     textField.font = UIFont.systemFontOfSize(50)
     textField.minimumFontSize = 14
     textField.adjustsFontSizeToFitWidth = true
-    textField.clearButtonMode = .WhileEditing
     textField.hidden = true
     textField.borders = [.Bottom]
     addSubview(textField)
@@ -80,29 +75,36 @@ class StatefulTextField: UIView {
     textField.centerYAnchor.constraintEqualToAnchor(centerYAnchor).active = true
     
     actionButton = UIButton()
-    actionButton.backgroundColor = UIColor.orangeColor()
+//    actionButton.backgroundColor = UIColor.blackColor()
     actionButton.setTitle("EDIT", forState: .Normal)
+    actionButton.setTitleColor(UIColor.orangeColor(), forState: .Normal)
+    actionButton.titleLabel?.font = UIFont.systemFontOfSize(14)
     actionButton.hidden = true
     actionButton.translatesAutoresizingMaskIntoConstraints = false
     addSubview(actionButton)
-    actionButton.leadingAnchor.constraintEqualToAnchor(textField.trailingAnchor, constant: -8).active = true
-    actionButton.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -8).active = true
+    actionButton.widthAnchor.constraintEqualToConstant(40).active = true
+//    actionButton.leadingAnchor.constraintEqualToAnchor(textField.trailingAnchor, constant: 8).active = true
     actionButton.bottomAnchor.constraintEqualToAnchor(textField.bottomAnchor).active = true
     
     statefulConstraints[.Unfocused] = [
       titleLabel.centerYAnchor.constraintEqualToAnchor(centerYAnchor),
+      textField.trailingAnchor.constraintEqualToAnchor(actionButton.leadingAnchor, constant: -16),
+      actionButton.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: 40),
     ]
     statefulConstraints[.Focusing] = [
       titleLabel.topAnchor.constraintEqualToAnchor(topAnchor, constant: 8),
-      textField.widthAnchor.constraintEqualToAnchor(widthAnchor, constant: -32),
+      statefulConstraints[.Unfocused]![1],
+      statefulConstraints[.Unfocused]![2],
     ]
     statefulConstraints[.Focused] = [
       statefulConstraints[.Focusing]![0],
-      statefulConstraints[.Focusing]![1],
+      statefulConstraints[.Unfocused]![1],
+      statefulConstraints[.Unfocused]![2],
     ]
     statefulConstraints[.Filled] = [
-      titleLabel.topAnchor.constraintEqualToAnchor(topAnchor, constant: 8),
-      textField.trailingAnchor.constraintEqualToAnchor(actionButton.leadingAnchor, constant: 8),
+      statefulConstraints[.Focusing]![0],
+      textField.trailingAnchor.constraintEqualToAnchor(actionButton.leadingAnchor, constant: -8),
+      actionButton.trailingAnchor.constraintEqualToAnchor(trailingAnchor, constant: -8),
     ]
     
     NSLayoutConstraint.activateConstraints(statefulConstraints[state]!)
@@ -131,29 +133,15 @@ extension StatefulTextField {
     if state == .Unfocused {
       transitionStateTo(.Focusing)
     }
-//    if state == .Unfocused {
-//      titleLabel.toggleWithDuration(titleSizeAnimationDuration) {
-//        let previousState = self.transitionStateTo(.Focused)
-//        self.animateConstraintsFromState(previousState, toState: self.state) {
-//          self.textField.hidden = false
-//          self.textField.becomeFirstResponder()
-//          self.textField.showBorders(true)
-//        }
-//      }
-//    } else if state == .Focused {
-//      let previousState = self.transitionStateTo(.Unfocused)
-//      textField.resignFirstResponder()
-//      textField.hidden = true
-//      self.animateConstraintsFromState(previousState, toState: self.state) {
-//        self.titleLabel.toggleWithDuration(self.titleSizeAnimationDuration)
-//      }
-//    }
   }
-  func animateConstraintsFromState(previousState: State, toState nextState: State, callback: (() -> ())? = nil) {
+  func animateConstraintsFromState(previousState: State,
+    toState nextState: State,
+    withDuration duration: NSTimeInterval,
+    callback: (() -> ())? = nil) {
     UIView.animateWithDuration(0, animations: { self.layoutIfNeeded() }) {
       completed in
       if completed {
-        UIView.animateWithDuration(self.titlePositionAnimationDuration, animations: {
+        UIView.animateWithDuration(duration, animations: {
           NSLayoutConstraint.deactivateConstraints(self.statefulConstraints[previousState]!)
           NSLayoutConstraint.activateConstraints(self.statefulConstraints[nextState]!)
           self.layoutIfNeeded()
@@ -166,6 +154,18 @@ extension StatefulTextField {
       }
     }
   }
+  func animateConstraintsFromState(
+    previousState: State,
+    toState nextState: State,
+    callback: (() -> ())? = nil)
+  {
+    animateConstraintsFromState(
+      previousState,
+      toState: nextState,
+      withDuration: self.titlePositionAnimationDuration,
+      callback: callback
+    )
+  }
   func transitionStateTo(next: State) -> State {
     let previous = state
     
@@ -177,18 +177,25 @@ extension StatefulTextField {
           self.transitionStateTo(.Focused)
         }
       }
+      
     case (_, .Focused):
       state = next
       textField.hidden = false
-      textField.becomeFirstResponder()
-      textField.showBorders(true)
+      animateConstraintsFromState(previous, toState: next, withDuration: 0) {
+        self.textField.becomeFirstResponder()
+        self.textField.showBorders(true)
+      }
       
     case (.Focused, .Filled):
       state = next
       textField.showBorders(false)
       textField.resignFirstResponder()
+      self.animateConstraintsFromState(previous, toState: next) {
+        self.actionButton.hidden = false
+      }
       
     case (.Focused, .Unfocused):
+      actionButton.hidden = true
       textField.showBorders(false)
       textField.resignFirstResponder()
       textField.hidden = true
@@ -197,7 +204,6 @@ extension StatefulTextField {
           self.state = next
         }
       }
-      
       
     default: break
     }
